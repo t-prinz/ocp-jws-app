@@ -12,6 +12,7 @@
       stat:
         path: "{{ credfile }}"
       register: stat_results
+      delegate_to: localhost
 
     - name: Define credentials using local file
       block:
