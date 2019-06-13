@@ -1,0 +1,57 @@
+---
+- name: Update an OpenShift Project
+  hosts: bastion
+  remote_user: root
+#  become: True
+  vars:
+    credfile: "/home/tprinz/Projects/ocp-jws-app/private/creds.yml"
+    ocp_proj_name: jws
+#    ocp_proj_payload: "{{ lookup('file', './projectconfig.yml') }}"
+
+  tasks:
+    - name: Check for credentials file
+      stat:
+        path: "{{ credfile }}"
+      register: stat_results
+      delegate_to: localhost
+
+    - name: Define credentials using local file
+      block:
+
+      - name: Include variable definitions from local file
+        include_vars:
+          file: "{{ credfile }}"
+
+      - name: Define OCP credentials based on local file
+        set_fact:
+          ocp_token: "{{ cf_ocp_token }}"
+          ocp_endpoint: "{{ cf_ocp_endpoint }}"
+          ocp_namespace: "{{ cf_ocp_namespace }}"
+
+      when: stat_results.stat.exists
+
+    - name: Define credentials using Ansible Tower custom credentials
+      block:
+
+      - name: Define OCP credentials based on custom credential
+        set_fact:
+          ocp_token: "{{ at_ocp_token }}"
+          ocp_endpoint: "{{ at_ocp_endpoint }}"
+          ocp_namespace: "{{ at_ocp_namespace }}"
+
+      when: not stat_results.stat.exists
+
+#    - name: Print variable
+#      debug:
+#        var: ocp_token
+
+#    - name: Print variable
+#      debug:
+#        var: ocp_namespace
+
+#    - name: Print variable
+#      debug:
+#        var: ocp_endpoint
+
+    - name: Delete project
+      command: "/home/tprinz/Projects/ocp-jws-app/update-app.sh"
