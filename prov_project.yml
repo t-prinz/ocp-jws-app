@@ -5,6 +5,7 @@
 #  become: True
   vars:
     credfile: "/home/tprinz/Projects/ocp-jws-app/private/creds.yml"
+    ocp_proj_name: jws
 #    ocp_proj_payload: "{{ lookup('file', './projectconfig.yml') }}"
 
   tasks:
@@ -40,14 +41,17 @@
 
       when: not stat_results.stat.exists
 
-    - name: Print variable
-      debug:
-        var: ocp_token
+#    - name: Print variable
+#      debug:
+#        var: ocp_token
 
-    - name: Print variable
-      debug:
-        var: ocp_namespace
+#    - name: Print variable
+#      debug:
+#        var: ocp_namespace
 
-    - name: Print variable
-      debug:
-        var: ocp_endpoint
+#    - name: Print variable
+#      debug:
+#        var: ocp_endpoint
+
+    - name: Create project
+      command: "/home/tprinz/Projects/ocp-jws-app/create-app.sh {{ ocp_proj_name }}"
